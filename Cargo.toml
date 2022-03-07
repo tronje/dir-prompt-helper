@@ -2,5 +2,6 @@
 name = "dir-prompt-helper"
 version = "0.1.0"
 authors = ["Tronje Krabbe <hi@tron.je>"]
+edition = "2021"
 
 [dependencies]
