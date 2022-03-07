@@ -55,3 +55,32 @@ fn shorten(path: String) -> String {
 fn main() {
     println!("{}", shorten(pwd()));
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn home() {
+        let path = format!("/home/{}", whoami());
+        assert_eq!(shorten(path), "~".to_owned());
+    }
+
+    #[test]
+    fn some_path() {
+        let path = String::from("/alpha/bravo/charlie/delta/echo/foxtrott");
+        assert_eq!(shorten(path), "/a/b/c/d/e/foxtrott".to_owned());
+    }
+
+    #[test]
+    fn somehwere_in_home() {
+        let path = format!("/home/{}/alpha/bravo/charlie", whoami());
+        assert_eq!(shorten(path), "~/a/b/charlie".to_owned());
+    }
+
+    #[test]
+    fn hidden_components() {
+        let path = String::from("/alpha/.bravo/charlie/.delta/echo");
+        assert_eq!(shorten(path), "/a/.b/c/.d/echo".to_owned());
+    }
+}
