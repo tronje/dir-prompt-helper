@@ -17,44 +17,41 @@ fn pwd() -> String {
     String::from_utf8(output.stdout).unwrap().trim().to_owned()
 }
 
-fn build_string() -> String {
-    let mut pwd = pwd();
+fn shorten(path: String) -> String {
+    let mut output = String::with_capacity(path.len());
 
     let home = format!("/home/{}", whoami());
 
-    if pwd.starts_with(&home) {
-        pwd = pwd.replace(&home, "~");
+    let mut skip = 0;
+
+    if path.starts_with(&home) {
+        output.push_str("~");
+        // skip 3 components and not only 2, because the first one is the empty string
+        skip = 3;
     }
 
-    pwd = pwd
-        .split('/')
-        .map(|dir| {
-            if pwd.ends_with(dir) {
-                String::from("/") + dir
-            } else if dir.starts_with(".") {
-                [
-                    '/',
-                    dir.chars().nth(0).unwrap(),
-                    dir.chars().nth(1).unwrap(),
-                ]
-                .iter()
-                .collect::<String>()
+    let last = path.split('/').count() - 1;
+    for (index, component) in path.split('/').enumerate() {
+        if index < skip || component.len() == 0 {
+            continue;
+        }
+
+        output.push('/');
+        if index == last {
+            output.push_str(component);
+        } else {
+            if component.starts_with(".") {
+                output.push('.');
+                output.push(component.chars().nth(1).unwrap());
             } else {
-                match dir.chars().nth(0) {
-                    Some(c) => ['/', c].iter().collect::<String>(),
-                    None => String::from(""),
-                }
+                output.push(component.chars().nth(0).unwrap());
             }
-        })
-        .collect::<String>();
-
-    if pwd.starts_with("/~") {
-        pwd = pwd.replace("/~", "~");
+        }
     }
 
-    pwd.replace("//", "/")
+    output
 }
 
 fn main() {
-    println!("{}", build_string());
+    println!("{}", shorten(pwd()));
 }
