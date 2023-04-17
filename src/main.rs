@@ -60,7 +60,7 @@ fn run() -> Result<()> {
     let pwd_path = Path::new(&pwd);
     let home = env::var("HOME")?;
     let mut stdout = io::stdout().lock();
-    print_short_pwd(&pwd_path, &home, &mut stdout)?;
+    print_short_pwd(pwd_path, &home, &mut stdout)?;
     Ok(())
 }
 
